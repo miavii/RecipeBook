@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+<!--<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' ws://192.168.1.123:3000 http://code.jquery.com https://code.jquery.com  https://ssl.gstatic.com gap: data: blob: filesystem: ; " />-->
+    <link rel="stylesheet"  href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+	  <script src="https://code.jquery.com/jquery-2.1.4.js" integrity="sha256-siFczlgw4jULnUICcdm9gjQPZkw/YPDqhQ9+nAOScE4=" crossorigin="anonymous"></script>
+  	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<!--	  <link rel="stylesheet" type="text/css" href="css/index.css" />-->
+  
+	  <title>Mobiiliohjelmointi</title>
+</head>
+
+<body>	
+	
+	<div data-role="popup" id="popupMenu" data-transition="pop" data-theme="a">
+		<a href="#" data-rel="back" class="ui-btn ui-btn-inline ui-corner-all ui-icon-delete ui-btn-icon-notext ui-btn-right">Sulje</a>
+
+		<ul data-role="listview">
+			<li><a href="#home" class="ui-btn">Home</a></li>
+			<li><a href="#camPage" class="ui-btn">Camera</a></li>
+			<li><a href="#weatherPage"  class="ui-btn">Weather</a></li>
+			<li><a href="#distPage" class="ui-btn">Distance</a></li>
+			<li><a href="#lunchPage" class="ui-btn">Lunch</a></li>
+		</ul>
+	</div>
+	
+	<!-- Vain dynaamiset header ja footer ominaisuudella data-position="fixed" pysyvät paikallaan vilkkumatta, kun sivua vaihdetaan -->
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<h1></h1>
+		
+	 	<a href="#popupMenu" data-rel="popup" data-transition="flip" class="ui-btn ui-btn-inline  ui-corner-all ui-icon-bars ui-btn-icon-notext">Menu</a>
+	 	
+		<div data-role="navbar" id="navi">
+			<ul>
+				<li><a href="#home" class="ui-btn ui-icon-home ui-btn-icon-top  ui-mini">Home</a></li>
+				<li><a href="#camPage" class="ui-btn ui-icon-camera ui-btn-icon-top ui-mini">Camera</a></li>
+				<li><a href="#weatherPage"  class="ui-btn ui-icon-calendar ui-btn-icon-top ui-mini">Weather</a></li>
+				<li><a href="#distPage" class="ui-btn ui-icon-gear ui-btn-icon-top ui-mini">Distance</a></li>
+				<li><a href="#lunchPage" class="ui-btn ui-icon-bullets ui-btn-icon-top ui-mini">Lunch</a></li>
+			</ul>
+		</div>
+	</div>
+	
+	<div data-role="footer" data-theme="b" data-position="fixed">
+		<h4>Mobiiliohjelmointi</h4>
+	</div>
+    <!-----------------------------
+                HOME
+    ------------------------------->
+	<div data-role="page" id="home" data-title="Home">
+	
+	    <div role="main" class="ui-content ui-body-a">
+            <h2>Nearby Restaurants</h2>
+            <div id="restaurants">
+
+            </div>
+            <p></p>
+	    </div> 
+	
+    </div> 
+    <!-----------------------------
+                CAMERA
+    ------------------------------->
+	<div data-role="page" id="camPage" data-title="Camera">
+  
+	    <div role="main" class="ui-content ui-body-a">
+            <button id="cameraBtn" class=" ui-btn ui-icon-camera"> Camera</button>
+            <img scr="" id="myImage"/>
+	    </div> 
+		
+    </div> 
+	
+    <!-----------------------------
+                WEATHER
+    ------------------------------->
+	<div data-role="page" id="weatherPage" data-title="Weather">
+  
+	    <div role="main" class="ui-content ui-body-a">
+	        <h1 id="location"></h1>
+            <img scr="" id="wImg">
+            <p id="wTemp"> </p>
+            <p id="wDesc"> </p>
+            <p id="wind"> </p>
+            <p id="clouds"> </p>
+	    </div> 
+
+    </div> 
+    
+	<!-----------------------------
+                DISTANCE
+    ------------------------------->
+	<div data-role="page" id="distPage" data-title="Distance">
+  
+	    <div role="main" class="ui-content ui-body-a">
+            <label name="from">From:</label>
+            <input id="from" name="from" type="text" />
+            <label name="to">To:</label>
+            <input id="to" name="to" type="text"/>
+            <button id="btn">Get</button>
+            <p id="distance"></p>
+	    </div> 
+
+    </div> 
+	
+    <!-----------------------------
+                LUNCH
+    ------------------------------->
+	<div data-role="page" id="lunchPage" data-title="Lunch">
+
+  
+	    <div role="content" id="FoodList" class="ui-content ui-body-a">
+            <h1>Lunch</h1>
+            <p id="lunchList" data-role="listview"></p>
+	    </div> <!-- /content -->
+
+    </div> <!-- /page -->
+		
+
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript">
+
+		$(document).one("pagebeforecreate", function () {
+	
+			$( "[data-role='header']" ).enhanceWithin().toolbar(); // Koska on sisältöä
+			$( "[data-role='footer']" ).toolbar();  // WP ei osaa asettaa oikein
+		
+			$("#popupMenu").enhanceWithin().popup(); // Koska on sisältöä	
+		});
+				
+		$(document).on("pagecreate", function() {
+
+			$(document).on("pagecontainershow", function(){
+				$(".ui-content").height(getRealContentHeight());
+			})
+
+			$(window).on("resize orientationchange", function(){
+				$(".ui-content").height(getRealContentHeight());
+			})
+			
+			function getRealContentHeight() {
+				var activePage = $.mobile.pageContainer.pagecontainer("getActivePage"),
+					screen = $.mobile.getScreenHeight(),
+					header = $(".ui-header").hasClass("ui-header-fixed") ? $(".ui-header").outerHeight() - 1 : $(".ui-header").outerHeight(),
+					footer = $(".ui-footer").hasClass("ui-footer-fixed") ? $(".ui-footer").outerHeight() - 1 : $(".ui-footer").outerHeight(),
+					contentMargins = $(".ui-content", activePage).outerHeight() - $(".ui-content", activePage).height();
+				
+				var contentHeight = screen - header - footer - contentMargins;	
+				
+				return contentHeight;
+			}
+			
+			$( document ).on("pagecontainerchange", function() {
+				navi();
+			});
+			
+			$("div.ui-page").on("swipeleft", function(event){
+				if(event.handled !== true) {
+					var nextpage = $(this).next("div[data-role='page']");;
+					
+					if (nextpage.length == 0) {
+						nextpage = $("div[data-role='page']:first");
+					}
+			
+					$.mobile.pageContainer.pagecontainer ("change", nextpage);
+					event.handled = true;
+					navi();
+				}
+				return false;
+			});
+			
+			$("div.ui-page").on("swiperight", function(event){
+				if(event.handled !== true) {
+					var prevpage = $(this).prev("div[data-role='page']");
+
+					if (prevpage.length == 0) {
+						prevpage = $("div[data-role='page']:last");
+					}
+					
+					$.mobile.pageContainer.pagecontainer ("change", prevpage);
+					event.handled = true;
+					navi();
+				}
+				return false;
+			});
+			
+			function navi() {
+				// attribute data-title
+				var current = $( ".ui-page-active" ).jqmData( "title" );
+				
+				$( "[data-role='header'] h1" ).text( current );
+				
+				$( "[data-role='navbar'] a.ui-btn-active" ).removeClass( "ui-btn-active" );
+				
+				$( "[data-role='navbar'] a" ).each(function() {
+					if ( $( this ).text() === current ) {
+						$( this ).addClass( "ui-btn-active" );
+					}
+				});
+			}
+		});      
+
+		$(document).on("pagecreate", "#home", function() {
+			console.log("Homepage created");
+            var onSuccess = function(position) {
+                lat = position.coords.latitude;
+                lon = position.coords.longitude;
+                fetchRestaurant(lat, lon);
+            };
+            
+            function onError(error) {
+                alert('code: '    + error.code    + '\n' +
+                      'message: ' + error.message + '\n');
+            }
+            navigator.geolocation.getCurrentPosition(onSuccess, onError);
+            
+		})
+		
+		$(document).on("pagecreate", "#weatherPage", function() {
+            console.log("Weatherpage created");
+            var onSuccess = function(position) {
+                lat = position.coords.latitude;
+                lon = position.coords.longitude;
+                fetchWeather(lat, lon);  
+            };
+
+            function onError(error) {
+                alert('code: '    + error.code    + '\n' +
+                      'message: ' + error.message + '\n');
+            }
+            navigator.geolocation.getCurrentPosition(onSuccess, onError);
+            
+		})
+        
+        $(document).on("pagecreate", "#lunchPage", function() {
+			console.log("Lunchpage created");
+			fetchLunch();
+		})
+        
+        $(document).on("pagecreate", "#camPage", function() {
+			console.log("CameraPage created");
+			$("#cameraBtn").click(function(){
+                navigator.camera.getPicture(onSuccess, onFail, { quality: 50,
+                    destinationType: Camera.DestinationType.FILE_URI });
+                function onSuccess(imageData) {
+                    var image = document.getElementById('myImage');
+                    image.src = "data:image/jpeg;base64," + imageData;
+                }
+                function onFail(message) {
+                    alert('Failed because: ' + message);
+                }
+            })
+		})
+                
+        $(document).on("pagecreate", "#distPage", function() {
+			console.log("Distancepage created");
+            $("#btn").click(function(){
+                var a = $("#to").val();
+                var b = $("#from").val();
+                var urkk = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=" + a + "&destinations=" + b +"&key=AIzaSyBpi_xtEb-cFD_c97WBBtmL29RDXJjEqKQ";
+                $.ajax({
+                    url: urkk,
+                    dataType: "json",
+                    timeout: 5000
+                })
+                .done(function(data) {
+                    console.log(data.rows[0].elements[0].distance.text);
+                    console.log(data.rows[0].elements[0].duration.text);
+                    $("#distance").text("Distance is "+ data.rows[0].elements[0].distance.text +" and estimated time is " + data.rows[0].elements[0].duration.text);
+                })
+             });
+		})
+        
+       function fetchRestaurant(lat, lon) {
+           console.log("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+lat+","+lon+"&radius=5&type=restaurant&key=AIzaSyBpi_xtEb-cFD_c97WBBtmL29RDXJjEqKQ");
+            $.ajax({
+                url: "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+lat+","+lon+"&radius=5&type=restaurant&key=AIzaSyBpi_xtEb-cFD_c97WBBtmL29RDXJjEqKQ",
+                dataType: "json",
+                timeout: 5000
+            })
+            .done(function(data) {
+                var k=0;
+                console.log(data.results.length);
+                
+                while(data.results[k]){
+                    $("#restaurants").append("<b>"+ data.results[k].name+ "</b><p>" +data.results[k].vicinity+ "</p><br>");
+
+                    k++;
+                }
+//                $("#restTitle").text(data.results[0].name);
+//                $("#restAddress").text(data.results[0].vicinity);
+            })
+        }
+                
+        function fetchWeather(lat, lon) {
+                $.ajax({
+                url: "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" +lon + "&units=metric&APPID=fb57eea62b5c3119535848b7d1cb0627",
+                dataType: "json",
+                timeout: 5000
+                })
+                .done(function(data) {
+                    console.log("hello");
+                    $("#location").text(data.name);
+                    $("#weather").text(data.weather[0].main);
+                    $("#wImg").attr("src", "http://openweathermap.org/img/w/" + data.weather[0].icon +".png");
+                    $("#wTemp").text(data.main.temp + " C");
+                    $("#wDesc").text(data.weather[0].description);
+                    $("#wind").text("Wind speed: " + data.wind.speed +" m/s");
+                    $("#clouds").text("Clouds: " + data.clouds.all + "%");
+                });
+        }        
+
+		function fetchLunch() {
+                $.ajax({
+                    url: "http://www.amica.fi/modules/json/json/Index?costNumber=0083&language=en",
+                    dataType: "json",
+                    timeout: 5000
+                })
+                .done(function(data) {
+
+                    var k=0;
+                    while(data.MenusForDays[k]){
+                        if (k==0) {$("#lunchList").append("<b>Today</b><br> ");}
+                        else if (k==1){$("#lunchList").append("<b>Tomorrow</b><br> ");}
+                        else if (k<=2){
+                                    $("#lunchList").append("<b>"+data.MenusForDays[k].Date.substring(0,10)+"</b><br> ");}
+                        var i = 0;
+                        while(data.MenusForDays[k].SetMenus[i]){
+                            var j=0;
+                            while(data.MenusForDays[k].SetMenus[i].Components[j]){
+                                $("#lunchList").append(data.MenusForDays[k].SetMenus[i].Components[j] +"<br>");
+                                j++;
+                            }
+                            i++;
+                            $("#lunchList").append("<br>");
+                        }
+                        k++;
+                    }
+                    console.log(data.MenusForDays[k].SetMenus[i].Components[0]);
+
+                });
+        }
+        
+    </script>
+    <style>
+        #lunchList {
+            margin-left: 10px;
+        }
+        #restaurants {
+            margin-left: 10px;
+        }
+    </style>
+</body>
+
+</html>

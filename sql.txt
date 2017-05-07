@@ -1,0 +1,30 @@
+DROP TABLE IF EXISTS RecipeIngredient
+DROP TABLE IF EXISTS RecipeDirection
+DROP TABLE IF EXISTS RecipeCategory
+DROP TABLE IF EXISTS Recipe
+DROP TABLE IF EXISTS Ingredients
+DROP TABLE IF EXISTS Directions
+DROP TABLE IF EXISTS Category
+
+
+CREATE TABLE IF NOT EXISTS Recipe 		(id INTEGER PRIMARY KEY, name, serving, time, favorite BOOLEAN DEFAULT FALSE)
+CREATE TABLE IF NOT EXISTS Ingredient 		(id INTEGER PRIMARY KEY, type)
+//CREATE TABLE IF NOT EXISTS Direction 		(id INTEGER PRIMARY KEY, step, text)
+//CREATE TABLE IF NOT EXISTS Category 		(id INTEGER PRIMARY KEY, type)
+CREATE TABLE IF NOT EXISTS RecipeIngredients 	(recipeId INTEGER PRIMARY KEY , ingredientId INTEGER PRIMARY KEY, amount, favorite BOOLEAN DEFAULT TRUE
+							FOREIGN KEY(recipeId) REFERENCES Recipe(id),
+							FOREIGN KEY(ingredientId) REFERENCES Ingredient(id))
+//CREATE TABLE IF NOT EXISTS RecipeDirections 	(recipeId INTEGER PRIMARY KEY, directionsId INTEGER PRIMARY KEY
+							FOREIGN KEY(recipeId) REFERENCES Recipe(id),
+							FOREIGN KEY(directionsId) REFERENCES Directiont(id))
+//CREATE TABLE IF NOT EXISTS RecipeCategory 	(recipeId INTEGER PRIMARY KEY, categoryId INTEGER PRIMARY KEY
+							FOREIGN KEY(recipeId) REFERENCES Recipe(id),
+							FOREIGN KEY(categoryId) REFERENCES Category(id))
+
+
+INSERT INTO Recipe (name, serving, time, favorite) VALUES ("Rocky Brownies", "3", "2 hours", 1)
+INSERT INTO Recipe (name, serving, time, favorite) VALUES ("Egg Fried Rice", "2", "30 minutes", 0)
+INSERT INTO Recipe (name, serving, time, favorite) VALUES ("Miso soup", "4 bowls", "15 minutes", 0)
+
+
+INSERT INTO Ingredient (name) VALUES ("Flour"), ("Sugar"), ("Eggs"), ("Rice"), ("Water"), ("Miso Paste")
